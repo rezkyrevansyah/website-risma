@@ -9,12 +9,14 @@ import {
 } from "@/components/public";
 import { getGalleries, getLatestGalleryItem } from "@/app/actions/gallery";
 import { getEvents, getLatestEvent } from "@/app/actions/events";
+import { getDonationSettings } from "@/app/actions/donations";
 
 export default async function HomePage() {
   const galleryData = await getGalleries();
   const eventsData = await getEvents();
   const latestGallery = await getLatestGalleryItem();
   const latestEvent = await getLatestEvent();
+  const donationSettings = await getDonationSettings();
 
   return (
     <>
@@ -29,7 +31,7 @@ export default async function HomePage() {
         <AgendaSection events={eventsData} />
         <ArticleSection />
         <GallerySection initialData={galleryData} />
-        <DonationSection />
+        <DonationSection donation={donationSettings || undefined} />
       </main>
       <Footer />
     </>

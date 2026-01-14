@@ -91,13 +91,32 @@ export default function GalleryAdminPage() {
 
   const uploadImage = async (file: File) => {
     const supabase = createClient();
-    const fileExt = file.name.split('.').pop();
+    
+    // 1. Compress Image
+    let fileToUpload = file;
+    try {
+      // Dynamic import to avoid SSR issues if any, though likely fine in client comp
+      const imageCompression = (await import('browser-image-compression')).default;
+      
+      const options = {
+        maxSizeMB: 0.8,          // target max size
+        maxWidthOrHeight: 1920,  // max resolution
+        useWebWorker: true,
+      };
+      
+      fileToUpload = await imageCompression(file, options);
+      
+    } catch (err) {
+      console.warn("Image compression failed, using original file", err);
+    }
+
+    const fileExt = fileToUpload.name.split('.').pop();
     const fileName = `${Math.random()}.${fileExt}`;
     const filePath = `${fileName}`;
 
     const { error: uploadError } = await supabase.storage
       .from('images')
-      .upload(filePath, file);
+      .upload(filePath, fileToUpload);
 
     if (uploadError) {
       throw uploadError;

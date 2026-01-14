@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Landmark, MapPin, Phone, Mail, Instagram, Facebook, Youtube } from "lucide-react";
+import { Landmark, MapPin, Phone, Mail, Instagram, Facebook, Youtube, ArrowRight } from "lucide-react";
 import { getSiteSettings } from "@/app/actions/settings";
 
 export async function Footer() {
@@ -132,25 +132,43 @@ export async function Footer() {
           {/* Map Column */}
           <div>
             <h4 className="text-lg font-semibold mb-6 text-white">Lokasi</h4>
-            <div className="rounded-xl overflow-hidden h-40 bg-slate-800">
-               {settings?.map_url && (
-                    <iframe
-                      src={settings.map_url}
-                      width="100%"
-                      height="100%"
-                      style={{ border: 0 }}
-                      allowFullScreen
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
-                      className="w-full h-full"
-                    ></iframe>
-               )}
-               {!settings?.map_url && (
-                  <div className="w-full h-full flex items-center justify-center text-slate-500">
-                     <p className="text-sm">Peta belum diatur</p>
-                  </div>
-               )}
-            </div>
+            
+             {settings?.map_url ? (
+                  <a 
+                    href={settings.map_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group block relative w-full h-40 rounded-xl overflow-hidden border border-slate-700/50 hover:border-emerald-500/50 transition-all duration-300 shadow-sm hover:shadow-md bg-slate-800"
+                  >
+                    {/* Background Pattern */}
+                    <div className="absolute inset-0 bg-slate-800 opacity-100 group-hover:scale-105 transition-transform duration-700">
+                       {/* Abstract Map-like Pattern */}
+                       <div className="absolute inset-0 opacity-10" style={{ 
+                          backgroundImage: "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.15) 1px, transparent 0)",
+                          backgroundSize: "20px 20px" 
+                       }}></div>
+                       <div className="absolute inset-0 flex items-center justify-center opacity-20">
+                          <MapPin className="w-24 h-24 text-slate-400 transform -rotate-12" />
+                       </div>
+                    </div>
+                    
+                    {/* Overlay Content */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center p-4 bg-gradient-to-t from-slate-900/80 to-slate-900/20 group-hover:from-slate-900/60 transition-all">
+                      <div className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform mb-3 border border-emerald-400/20">
+                          <MapPin className="w-5 h-5 fill-current" />
+                      </div>
+                      <span className="text-xs font-medium text-white/90 bg-slate-900/80 px-3 py-1.5 rounded-full backdrop-blur-sm border border-slate-700 group-hover:border-emerald-500/50 transition-colors flex items-center gap-1.5">
+                         Buka di Google Maps
+                         <ArrowRight className="w-3 h-3" />
+                      </span>
+                    </div>
+                  </a>
+             ) : (
+                <div className="w-full h-40 rounded-xl bg-slate-800/50 border border-slate-800 flex flex-col items-center justify-center text-slate-500 gap-2">
+                   <MapPin className="w-8 h-8 opacity-20" />
+                   <p className="text-sm">Lokasi belum diatur</p>
+                </div>
+             )}
           </div>
         </div>
       </div>

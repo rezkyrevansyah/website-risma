@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Calendar, User, BookOpen, Share2, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, Calendar, User, BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
@@ -10,31 +10,32 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
 
 import { ArticleItem } from "@/types";
-import { articles } from "@/data";
 import { CarouselApi } from "@/components/ui/carousel";
+import { getArticles } from "@/app/actions/articles";
+import { toast } from "sonner";
 
 export function ArticleSection() {
   const [api, setApi] = useState<CarouselApi>()
-  const [current, setCurrent] = useState(0)
-  const [count, setCount] = useState(0)
+  const [articles, setArticles] = useState<ArticleItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!api) {
-      return
+    async function fetchArticles() {
+      try {
+        const data = await getArticles(6); // Fetch latest 6
+        setArticles(data);
+      } catch (error) {
+        console.error("Failed to fetch articles", error);
+        toast.error("Gagal memuat artikel terbaru");
+      } finally {
+        setIsLoading(false);
+      }
     }
- 
-    setCount(api.scrollSnapList().length)
-    setCurrent(api.selectedScrollSnap() + 1)
- 
-    api.on("select", () => {
-      setCurrent(api.selectedScrollSnap() + 1)
-    })
-  }, [api])
+    fetchArticles();
+  }, []);
 
   return (
     <section id="artikel" className="section-padding bg-white relative">
@@ -59,6 +60,7 @@ export function ArticleSection() {
                onClick={() => api?.scrollPrev()} 
                variant="outline" 
                size="icon" 
+               disabled={!articles.length}
                aria-label="Previous article"
                className="h-12 w-12 rounded-full border-slate-200 bg-white hover:bg-slate-50 hover:text-emerald-600 transition-all shadow-sm"
              >
@@ -68,6 +70,7 @@ export function ArticleSection() {
                onClick={() => api?.scrollNext()} 
                variant="outline" 
                size="icon" 
+               disabled={!articles.length}
                aria-label="Next article"
                className="h-12 w-12 rounded-full border-slate-200 bg-white hover:bg-slate-50 hover:text-emerald-600 transition-all shadow-sm"
              >
@@ -78,85 +81,92 @@ export function ArticleSection() {
 
         {/* Carousel */}
         <div className="relative">
-          <Carousel
-            setApi={setApi}
-            opts={{
-              align: "start",
-              loop: true,
-            }}
-            className="w-full"
-          >
-            <CarouselContent className="-ml-6 pb-8">
-              {articles.map((article) => (
-                <CarouselItem key={article.id} className="pl-6 md:basis-1/2 lg:basis-1/3">
-                  <div className="group relative bg-white border border-slate-100 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 h-full flex flex-col">
-                    
-                    {/* Image Top */}
-                    <div className="relative h-60 w-full overflow-hidden bg-slate-100">
-                      {/* Fallback pattern if image missing */}
-                       <div className="absolute inset-0 bg-slate-200 flex items-center justify-center text-slate-400">
-                          <Image 
-                            src={article.imageUrl} 
-                            alt={article.title}
-                            fill
-                            className="object-cover transition-transform duration-700 group-hover:scale-110"
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          />
-                       </div>
-                       
-                       {/* Floating Tag */}
-                       <div className="absolute top-4 left-4">
-                          <Badge className="bg-white/90 backdrop-blur text-slate-900 border-none shadow-sm hover:bg-white text-xs font-bold px-3 py-1">
-                             {article.category}
-                          </Badge>
-                       </div>
+          {isLoading ? (
+             <div className="grid md:grid-cols-3 gap-6">
+                {[1,2,3].map(i => (
+                  <div key={i} className="h-[400px] bg-slate-50 rounded-[2rem] animate-pulse"></div>
+                ))}
+             </div>
+          ) : articles.length > 0 ? (
+            <Carousel
+              setApi={setApi}
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+              className="w-full"
+            >
+              <CarouselContent className="-ml-6 pb-8">
+                {articles.map((article) => (
+                  <CarouselItem key={article.id} className="pl-6 md:basis-1/2 lg:basis-1/3">
+                    <div className="group relative bg-white border border-slate-100 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 h-full flex flex-col">
+                      
+                      {/* Image Top */}
+                      <div className="relative h-60 w-full overflow-hidden bg-slate-100">
+                         <div className="absolute inset-0 bg-slate-200 flex items-center justify-center text-slate-400">
+                            {article.imageUrl ? (
+                              <Image 
+                                src={article.imageUrl} 
+                                alt={article.title}
+                                fill
+                                className="object-cover transition-transform duration-700 group-hover:scale-110"
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                              />
+                            ) : (
+                               <div className="text-slate-300">No Image</div>
+                            )}
+                         </div>
+                         
+                         {/* Floating Tag */}
+                         <div className="absolute top-4 left-4">
+                            <Badge className="bg-white/90 backdrop-blur text-slate-900 border-none shadow-sm hover:bg-white text-xs font-bold px-3 py-1">
+                               {article.category}
+                            </Badge>
+                         </div>
+                      </div>
+                      
+                       {/* Content Body */}
+                      <div className="p-8 flex-1 flex flex-col">
+                         <div className="flex items-center gap-3 text-xs text-slate-500 font-medium mb-4">
+                            <span className="flex items-center gap-1">
+                               <Calendar className="w-3.5 h-3.5" />
+                               {article.date}
+                            </span>
+                            <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                            <span>{article.readingTime}</span>
+                         </div>
+                         
+                         <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-emerald-600 transition-colors line-clamp-2">
+                            {article.title}
+                         </h3>
+                         
+                         <p className="text-slate-500 text-sm leading-relaxed mb-6 line-clamp-2">
+                            {article.excerpt}
+                         </p>
+                         
+                         {/* Footer Action */}
+                         <div className="mt-auto flex items-center justify-between border-t border-slate-50 pt-6">
+                            <div className="flex items-center gap-2">
+                               <span className="text-sm font-semibold text-slate-700">{article.author.name}</span>
+                            </div>
+                            
+                            <Link href={`/artikel/${article.id}`}>
+                               <button aria-label={`Baca artikel ${article.title}`} className="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center hover:bg-emerald-600 hover:scale-110 transition-all shadow-lg">
+                                  <ArrowRight className="w-5 h-5" />
+                               </button>
+                            </Link>
+                         </div>
+                      </div>
                     </div>
-                    
-                     {/* Content Body */}
-                    <div className="p-8 flex-1 flex flex-col">
-                       <div className="flex items-center gap-3 text-xs text-slate-500 font-medium mb-4">
-                          <span className="flex items-center gap-1">
-                             <Calendar className="w-3.5 h-3.5" />
-                             {article.date}
-                          </span>
-                          <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                          <span>{article.readingTime}</span>
-                       </div>
-                       
-                       <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-emerald-600 transition-colors line-clamp-2">
-                          {article.title}
-                       </h3>
-                       
-                       <p className="text-slate-500 text-sm leading-relaxed mb-6 line-clamp-2">
-                          {article.excerpt}
-                       </p>
-                       
-                       {/* Footer Action (Like Agenda: Arrow Btn) */}
-                       <div className="mt-auto flex items-center justify-between border-t border-slate-50 pt-6">
-                          <div className="flex items-center gap-2">
-                             <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 overflow-hidden">
-                                {article.author.avatarUrl && (
-                                  <Image src={article.author.avatarUrl} alt={article.author.name} width={32} height={32} />
-                                )}
-                                {!article.author.avatarUrl && <User className="w-4 h-4" />}
-                             </div>
-                             <span className="text-sm font-semibold text-slate-700">{article.author.name}</span>
-                          </div>
-                          
-                          <Link href={`/artikel/${article.id}`}>
-                             <button aria-label={`Baca artikel ${article.title}`} className="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center hover:bg-emerald-600 hover:scale-110 transition-all shadow-lg">
-                                <ArrowRight className="w-5 h-5" />
-                             </button>
-                          </Link>
-                       </div>
-                    </div>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            
-            {/* Navigation Buttons Removed (Native) */}
-          </Carousel>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
+          ) : (
+             <div className="text-center py-20 bg-slate-50 rounded-[2rem] border border-dashed border-slate-200">
+                <p className="text-slate-500">Belum ada artikel yang diterbitkan.</p>
+             </div>
+          )}
         </div>
       </div>
     </section>

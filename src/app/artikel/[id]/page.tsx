@@ -6,22 +6,77 @@ import { ArrowLeft, Clock, Share2, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useParams, notFound } from "next/navigation";
-import { articles } from "@/data";
-import { toast } from "sonner"; // Assuming sonner is installed/used
+import { toast } from "sonner";
+import { useEffect, useState } from "react";
+import { getArticleById, getArticles } from "@/app/actions/articles";
+import { ArticleItem } from "@/types";
 
 export default function ArticleDetailPage() {
   const params = useParams();
   const id = params.id as string;
   
-  const article = articles.find((a) => a.id === id);
-  
-  if (!article) {
-    notFound();
+  const [article, setArticle] = useState<ArticleItem | null>(null);
+  const [relatedArticles, setRelatedArticles] = useState<ArticleItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+
+  useEffect(() => {
+    async function fetchData() {
+       setIsLoading(true);
+       try {
+          // Fetch main article
+          const data = await getArticleById(id);
+          if (!data) {
+             setIsError(true); // Or handle redirect
+             return;
+          }
+          setArticle(data);
+
+          // Fetch related (just latest for now, excluding current)
+          const allArticles = await getArticles(4);
+          const related = allArticles
+             .filter((a) => a.id !== id)
+             .slice(0, 2);
+          setRelatedArticles(related);
+
+       } catch (error) {
+          console.error(error);
+          setIsError(true);
+       } finally {
+          setIsLoading(false);
+       }
+    }
+
+    if (id) {
+       fetchData();
+    }
+  }, [id]);
+
+  if (isError) {
+     return (
+        <div className="min-h-screen flex items-center justify-center p-4">
+           <div className="text-center">
+              <h1 className="text-2xl font-bold mb-4">Artikel tidak ditemukan</h1>
+              <Link href="/#artikel">
+                 <Button>Kembali ke Beranda</Button>
+              </Link>
+           </div>
+        </div>
+     );
   }
 
-  const relatedArticles = articles
-    .filter((a) => a.category === article.category && a.id !== article.id)
-    .slice(0, 2);
+  if (isLoading || !article) {
+     return (
+        <div className="min-h-screen bg-white container-custom pt-32 pb-20">
+           <div className="animate-pulse space-y-8 max-w-4xl mx-auto">
+              <div className="h-8 bg-slate-100 w-32 mx-auto rounded-full"></div>
+              <div className="h-16 bg-slate-100 w-3/4 mx-auto rounded-xl"></div>
+              <div className="h-4 bg-slate-100 w-1/2 mx-auto rounded-full"></div>
+              <div className="h-[400px] bg-slate-100 rounded-[3rem] w-full"></div>
+           </div>
+        </div>
+     );
+  }
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -56,20 +111,12 @@ export default function ArticleDetailPage() {
               {article.excerpt}
             </p>
 
-            {/* Author Meta */}
+            {/* Author Meta (Avatar Removed) */}
             <div className="flex items-center justify-center gap-4">
-               <div className="w-12 h-12 rounded-full bg-slate-100 overflow-hidden relative border border-slate-100">
-                  {article.author.avatarUrl ? (
-                    <Image src={article.author.avatarUrl} alt={article.author.name} fill className="object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold text-lg">
-                      {article.author.name.charAt(0)}
-                    </div>
-                  )}
-               </div>
-               <div className="text-left">
+               {/* Avatar Removed per request */}
+               <div className="text-center">
                   <p className="font-bold text-slate-900 text-sm">{article.author.name}</p>
-                  <div className="flex items-center gap-2 text-slate-500 text-xs font-medium uppercase tracking-wider">
+                  <div className="flex items-center justify-center gap-2 text-slate-500 text-xs font-medium uppercase tracking-wider mt-1">
                      <span>{article.date}</span>
                      <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
                      <span>{article.readingTime}</span>
@@ -81,14 +128,16 @@ export default function ArticleDetailPage() {
 
       {/* 2. Featured Image (Cinematic) */}
       <div className="w-full h-[400px] md:h-[600px] relative mb-16 px-4 md:px-8 max-w-[1400px] mx-auto">
-         <div className="relative w-full h-full rounded-2xl md:rounded-[3rem] overflow-hidden shadow-2xl">
-            <Image 
-              src={article.imageUrl} 
-              alt={article.title}
-              fill
-              className="object-cover"
-              priority
-            />
+         <div className="relative w-full h-full rounded-2xl md:rounded-[3rem] overflow-hidden shadow-2xl bg-slate-100">
+            {article.imageUrl && (
+              <Image 
+                src={article.imageUrl} 
+                alt={article.title}
+                fill
+                className="object-cover"
+                priority
+              />
+            )}
          </div>
       </div>
 
@@ -128,8 +177,10 @@ export default function ArticleDetailPage() {
               {relatedArticles.map((related) => (
                 <Link key={related.id} href={`/artikel/${related.id}`} className="group block">
                   <div className="bg-slate-50 rounded-3xl p-2 transition-colors hover:bg-emerald-50/50">
-                     <div className="relative h-64 w-full rounded-2xl overflow-hidden mb-6">
-                        <Image src={related.imageUrl} alt={related.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
+                     <div className="relative h-64 w-full rounded-2xl overflow-hidden mb-6 bg-slate-200">
+                        {related.imageUrl && (
+                             <Image src={related.imageUrl} alt={related.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
+                        )}
                      </div>
                      <div className="px-4 pb-4">
                         <Badge variant="outline" className="mb-3 border-slate-200 bg-white">{related.category}</Badge>

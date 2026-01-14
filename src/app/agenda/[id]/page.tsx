@@ -1,20 +1,24 @@
-"use client";
-
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Calendar, Clock, MapPin, Share2, ArrowRight, User } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, MapPin, User } from "lucide-react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import { dummyEvents } from "@/data";
 import { notFound } from "next/navigation";
-import { toast } from "sonner";
+import { getEventById } from "@/app/actions/events";
+import { ShareButton } from "@/components/public/ShareButton"; 
+// I will need to create ShareButton or inline the client logic in a separate file. 
+// For now, I'll create a new component file for the interactive parts or just use a simple button.
+// Actually, I can put the share button in a separate file.
 
-export default function AgendaDetailPage() {
-  const params = useParams();
-  const id = params.id as string;
-  
-  const event = dummyEvents.find((e) => e.id === id);
-  
+interface AgendaDetailPageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
+export default async function AgendaDetailPage(props: AgendaDetailPageProps) {
+  const params = await props.params;
+  const { id } = params;
+  const event = await getEventById(id);
+
   if (!event) {
     notFound();
   }
@@ -22,19 +26,6 @@ export default function AgendaDetailPage() {
   const dateObj = new Date(event.date);
   const dayName = dateObj.toLocaleDateString("id-ID", { weekday: "long" });
   const dateStr = dateObj.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
-
-  const handleShare = async () => {
-    if (navigator.share) {
-      await navigator.share({
-        title: event.title,
-        text: event.description,
-        url: window.location.href,
-      });
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      toast.success("Link berhasil disalin!");
-    }
-  };
 
   return (
     <main className="min-h-screen bg-white text-slate-900 pt-24 pb-20">
@@ -115,14 +106,8 @@ export default function AgendaDetailPage() {
 
                    <hr className="border-slate-200 my-8" />
 
-                   <div className="grid grid-cols-2 gap-3">
-                      <Button onClick={handleShare} variant="outline" className="h-12 rounded-xl border-slate-200 hover:bg-slate-100 hover:text-slate-900 font-semibold">
-                         <Share2 className="w-4 h-4 mr-2" />
-                         Share
-                      </Button>
-                      <Button className="h-12 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-lg shadow-emerald-200">
-                         Ingatkan Saya
-                      </Button>
+                   <div className="grid grid-cols-1 gap-3">
+                      <ShareButton title={event.title} description={event.description} />
                    </div>
                 </div>
              </div>

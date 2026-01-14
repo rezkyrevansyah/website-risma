@@ -7,8 +7,15 @@ import {
   DonationSection,
   Footer,
 } from "@/components/public";
+import { getGalleries, getLatestGalleryItem } from "@/app/actions/gallery";
+import { getEvents, getLatestEvent } from "@/app/actions/events";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const galleryData = await getGalleries();
+  const eventsData = await getEvents();
+  const latestGallery = await getLatestGalleryItem();
+  const latestEvent = await getLatestEvent();
+
   return (
     <>
       <Header />
@@ -16,10 +23,12 @@ export default function HomePage() {
         <Hero
           mosqueName="Al Arqam"
           tagline="Bersama membangun generasi muda yang islami dan bermanfaat bagi masyarakat"
+          latestEventTitle={latestEvent?.title}
+          latestGalleryImage={latestGallery?.src}
         />
-        <AgendaSection />
+        <AgendaSection events={eventsData} />
         <ArticleSection />
-        <GallerySection />
+        <GallerySection initialData={galleryData} />
         <DonationSection />
       </main>
       <Footer />

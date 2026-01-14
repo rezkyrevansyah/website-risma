@@ -73,9 +73,10 @@ function AgendaCard({ event }: { event: EventItem }) {
           <span>{event.time}</span>
         </div>
 
-        <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-6 line-clamp-3">
-          {event.description}
-        </p>
+        <div 
+          className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-6 line-clamp-3 prose prose-sm prose-emerald"
+          dangerouslySetInnerHTML={{ __html: event.description }}
+        />
       </div>
 
       {/* Button Action */}
@@ -95,7 +96,7 @@ function AgendaCard({ event }: { event: EventItem }) {
   );
 }
 
-export function AgendaSection({ events = dummyEvents }: { events?: EventItem[] }) {
+export function AgendaSection({ events = [] }: { events?: EventItem[] }) {
   const [api, setApi] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
   const [count, setCount] = useState(0)

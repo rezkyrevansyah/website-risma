@@ -1,13 +1,26 @@
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminProvider } from "@/context/AdminContext";
+import { getEvents } from "@/app/actions/events";
+import { getArticles } from "@/app/actions/articles";
+import { getGalleries } from "@/app/actions/gallery";
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [events, articles, galleries] = await Promise.all([
+    getEvents(),
+    getArticles(),
+    getGalleries(),
+  ]);
+
   return (
-    <AdminProvider>
+    <AdminProvider
+      initialEvents={events}
+      initialArticles={articles}
+      initialGalleries={galleries}
+    >
       <div className="min-h-screen bg-slate-50">
         <AdminSidebar />
         <div className="pl-64">

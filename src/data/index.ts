@@ -178,48 +178,7 @@ export const articles: ArticleItem[] = [
   }
 ];
 
-export const galleryItems: GalleryItem[] = [
-  {
-    id: "1",
-    src: "/images/gallery-1.jpg",
-    alt: "Kajian Rutin Malam Ahad",
-    caption: "Antusiasme jamaah muda dalam kajian rutin membahas Kitab Adabul Mufrad.",
-    likes: 124,
-    category: "kajian"
-  },
-  {
-    id: "2",
-    src: "/images/gallery-2.jpg",
-    alt: "Santunan Anak Yatim",
-    caption: "Penyaluran donasi dan bingkisan kepada adik-adik panti asuhan.",
-    likes: 89,
-    category: "santunan"
-  },
-  {
-    id: "3",
-    src: "/images/gallery-3.jpg",
-    alt: "Rihlah Alam Terbuka",
-    caption: "Tadabbur alam bersama pengurus inti di Curug Cilember.",
-    likes: 256,
-    category: "outdoor"
-  },
-  {
-    id: "4",
-    src: "/images/gallery-4.jpg",
-    alt: "Festival Muharram",
-    caption: "Pawai obor keliling kampung menyambut tahun baru islam 1448H.",
-    likes: 178,
-    category: "festive"
-  },
-  {
-    id: "5",
-    src: "/images/gallery-5.jpg",
-    alt: "Kerja Bakti Masjid",
-    caption: "Membersihkan area masjid menjelang Ramadhan.",
-    likes: 95,
-    category: "santunan"
-  },
-];
+export const galleryItems: GalleryItem[] = [];
 
 export const defaultDonation: DonationInfo = {
   bankName: "Bank Syariah Indonesia",

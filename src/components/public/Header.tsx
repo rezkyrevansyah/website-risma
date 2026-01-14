@@ -93,6 +93,7 @@ export function Header() {
                   variant="ghost"
                   size="icon"
                   aria-label="Open mobile menu"
+                  suppressHydrationWarning
                   className={cn(
                     isScrolled
                       ? "text-foreground"

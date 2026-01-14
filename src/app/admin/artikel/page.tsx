@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -9,10 +9,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Pencil, Trash2, Search, User, Image as ImageIcon, Upload, CalendarIcon } from "lucide-react";
-import { articles } from "@/data";
+import { Plus, Pencil, Trash2, Search, Image as ImageIcon, CalendarIcon, Loader2 } from "lucide-react";
 import { ArticleItem } from "@/types";
-import { useAdmin } from "@/context/AdminContext";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -20,6 +18,8 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import Image from "next/image";
+import { createClient } from "@/lib/supabase/client";
+import { getArticles, createArticle, updateArticle, deleteArticle } from "@/app/actions/articles";
 
 // Schema Validation
 const formSchema = z.object({
@@ -28,7 +28,7 @@ const formSchema = z.object({
   category: z.string().min(1, "Kategori wajib diisi"),
   date: z.string().min(1, "Tanggal wajib diisi"),
   readingTime: z.string().min(1, "Waktu baca wajib diisi"),
-  imageUrl: z.string().min(1, "Gambar wajib diunggah"),
+  imageUrl: z.string().optional(), // Made optional for edit case where we keep existing
   authorName: z.string().min(1, "Nama penulis wajib diisi"),
   authorRole: z.string().min(1, "Peran penulis wajib diisi"),
   content: z.string().optional(),
@@ -37,14 +37,39 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function ArticleAdminPage() {
-  const { articles: dataList, addArticle, updateArticle, deleteArticle } = useAdmin();
+  const [dataList, setDataList] = useState<ArticleItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const [searchQuery, setSearchQuery] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
+  // File Upload State
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>("");
+
   // Delete State
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+
+  // Load Data
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  async function loadData() {
+    setIsLoading(true);
+    try {
+      const data = await getArticles();
+      setDataList(data);
+    } catch (error) {
+      console.error(error);
+      toast.error("Gagal memuat data artikel");
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   // Filter
   const filteredData = dataList.filter((item) => 
@@ -68,53 +93,88 @@ export default function ArticleAdminPage() {
     },
   });
 
-  // Handle File Upload Mock
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle File Selection
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Create fake URL
+      setSelectedFile(file);
       const url = URL.createObjectURL(file);
-      form.setValue("imageUrl", url);
-      toast.success("Gambar berhasil diunggah");
+      setPreviewUrl(url);
+      form.setValue("imageUrl", url); // Trigger validation pass
     }
   };
 
-  const onSubmit = (data: FormValues) => {
-    const dateObj = new Date(data.date);
-    const formattedDate = dateObj.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+  const uploadImage = async (file: File) => {
+    const supabase = createClient();
+    const fileExt = file.name.split('.').pop();
+    const fileName = `article-${Date.now()}.${fileExt}`;
+    const filePath = `${fileName}`;
 
-    const payload = {
-      title: data.title,
-      excerpt: data.excerpt,
-      content: data.content || "",
-      category: data.category,
-      date: formattedDate,
-      readingTime: data.readingTime,
-      imageUrl: data.imageUrl,
-      author: {
-        name: data.authorName,
-        role: data.authorRole,
-        avatarUrl: "" 
-      }
-    };
+    const { error: uploadError } = await supabase.storage
+      .from('images') // Reusing images bucket
+      .upload(filePath, file);
 
-    if (editingId) {
-      updateArticle({ ...payload, id: editingId } as ArticleItem);
-      toast.success("Artikel berhasil diperbarui");
-    } else {
-      const newItem: ArticleItem = {
-        id: Math.random().toString(36).substr(2, 9),
-        ...payload
-      };
-      addArticle(newItem);
-      toast.success("Artikel baru berhasil ditambahkan");
+    if (uploadError) {
+      throw uploadError;
     }
-    setIsDialogOpen(false);
-    resetForm();
+
+    const { data } = supabase.storage.from('images').getPublicUrl(filePath);
+    return data.publicUrl;
+  };
+
+  const onSubmit = async (data: FormValues) => {
+    setIsSubmitting(true);
+    try {
+      let finalImageUrl = data.imageUrl || "";
+
+      // 1. Upload Image (if new file selected)
+      if (selectedFile) {
+        finalImageUrl = await uploadImage(selectedFile);
+      }
+
+      const dateObj = new Date(data.date);
+      const formattedDate = dateObj.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+
+      const payload = {
+        title: data.title,
+        excerpt: data.excerpt,
+        content: data.content || "",
+        category: data.category,
+        date: formattedDate,
+        readingTime: data.readingTime,
+        imageUrl: finalImageUrl,
+        author: {
+          name: data.authorName,
+          role: data.authorRole,
+          avatarUrl: "" 
+        }
+      };
+
+      if (editingId) {
+        await updateArticle({ ...payload, id: editingId } as ArticleItem);
+        toast.success("Artikel berhasil diperbarui");
+      } else {
+        if (!finalImageUrl) throw new Error("Gambar wajib diupload untuk artikel baru");
+        await createArticle(payload);
+        toast.success("Artikel baru berhasil ditambahkan");
+      }
+      
+      setIsDialogOpen(false);
+      resetForm();
+      await loadData();
+
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message || "Terjadi kesalahan saat menyimpan");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const resetForm = () => {
     setEditingId(null);
+    setSelectedFile(null);
+    setPreviewUrl("");
     form.reset({
       title: "",
       excerpt: "",
@@ -130,14 +190,22 @@ export default function ArticleAdminPage() {
 
   const handleEdit = (item: ArticleItem) => {
     setEditingId(item.id);
-    const d = new Date(item.date);
-    const dateStr = !isNaN(d.getTime()) ? d.toISOString().split('T')[0] : "";
+    
+    setPreviewUrl(item.imageUrl);
+    setSelectedFile(null);
 
+    // Date handling: current item.date is formatted string "12 Okt 2023"
+    // HTML date input needs "YYYY-MM-DD".
+    // We'd ideally parse it or store raw date DB side. 
+    // For now, let's leave date empty as "re-enter required" if we can't parse easily without library
+    // Or try basic parsing if format is consistent 'D MMM YYYY' in ID locale... 
+    // Let's just reset date field to empty for now to be safe.
+    
     form.reset({
       title: item.title,
       excerpt: item.excerpt,
       category: item.category,
-      date: dateStr,
+      date: "", 
       readingTime: item.readingTime,
       imageUrl: item.imageUrl,
       authorName: item.author.name,
@@ -152,12 +220,18 @@ export default function ArticleAdminPage() {
     setIsDeleteOpen(true);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (deleteId) {
-      deleteArticle(deleteId);
-      toast.success("Artikel berhasil dihapus");
-      setIsDeleteOpen(false);
-      setDeleteId(null);
+      try {
+        await deleteArticle(deleteId);
+        toast.success("Artikel berhasil dihapus");
+        await loadData();
+      } catch (error) {
+        toast.error("Gagal menghapus artikel");
+      } finally {
+        setIsDeleteOpen(false);
+        setDeleteId(null);
+      }
     }
   };
 
@@ -200,7 +274,15 @@ export default function ArticleAdminPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredData.length === 0 ? (
+            {isLoading ? (
+               <TableRow>
+                 <TableCell colSpan={5} className="h-32 text-center">
+                    <div className="flex justify-center items-center h-full">
+                      <Loader2 className="w-6 h-6 animate-spin text-emerald-600" />
+                    </div>
+                 </TableCell>
+               </TableRow>
+            ) : filteredData.length === 0 ? (
                <TableRow>
                   <TableCell colSpan={5} className="h-32 text-center text-slate-500">
                      <p>Tidak ada artikel ditemukan.</p>
@@ -279,8 +361,8 @@ export default function ArticleAdminPage() {
                <Label className="text-sm font-semibold text-slate-700">Cover Artikel <span className="text-rose-500">*</span></Label>
                <div className="flex items-start gap-4">
                   <div className="w-32 h-20 bg-slate-100 rounded-lg border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden relative group">
-                     {form.watch("imageUrl") ? (
-                        <img src={form.watch("imageUrl")} alt="Preview" className="w-full h-full object-cover" />
+                     {previewUrl ? (
+                        <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
                      ) : (
                         <ImageIcon className="w-8 h-8 text-slate-400" />
                      )}
@@ -290,7 +372,7 @@ export default function ArticleAdminPage() {
                         id="imageUpload" 
                         type="file" 
                         accept="image/*" 
-                        onChange={handleImageUpload}
+                        onChange={handleFileSelect}
                         className="cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 mb-2" 
                      />
                      <p className="text-xs text-slate-500">Format: JPG, PNG, GIF. Maks 2MB.</p>
@@ -365,8 +447,17 @@ export default function ArticleAdminPage() {
             </div>
 
             <DialogFooter className="pt-4">
-              <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} className="h-10 px-6">Batal</Button>
-              <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700 text-white h-10 px-6 shadow-md shadow-emerald-100">Simpan Publikasi</Button>
+              <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} disabled={isSubmitting} className="h-10 px-6">Batal</Button>
+              <Button type="submit" disabled={isSubmitting} className="bg-emerald-600 hover:bg-emerald-700 text-white h-10 px-6 shadow-md shadow-emerald-100">
+                {isSubmitting ? (
+                   <>
+                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                     Menyimpan...
+                   </>
+                ) : (
+                   "Simpan Publikasi"
+                )}
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>

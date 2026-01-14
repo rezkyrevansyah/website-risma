@@ -13,6 +13,7 @@ export interface EventItem {
   location: string;
   category: EventCategory;
   description: string;
+  imageUrl?: string;
 }
 
 export interface ArticleItem {

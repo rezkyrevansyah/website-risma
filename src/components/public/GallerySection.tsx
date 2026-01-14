@@ -24,13 +24,16 @@ import {
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 
 import { GalleryItem } from "@/types";
-import { galleryItems } from "@/data";
+
 import { CarouselApi } from "@/components/ui/carousel";
 
-export function GallerySection() {
+export function GallerySection({ initialData }: { initialData?: GalleryItem[] }) {
   const [api, setApi] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
   const [count, setCount] = useState(0)
+
+  // Use initialData if available, otherwise fallback to empty (or static)
+  const displayItems = initialData || [];
 
   useEffect(() => {
     if (!api) {
@@ -99,7 +102,7 @@ export function GallerySection() {
             className="w-full"
           >
             <CarouselContent className="items-center -ml-8 pb-10">
-              {galleryItems.map((item, index) => {
+              {displayItems.map((item, index) => {
                  // Dynamic border radius for aesthetic organic feel
                  const shapes = [
                    "rounded-[40px_10px_40px_10px]",

@@ -8,12 +8,16 @@ interface HeroProps {
   mosqueName?: string;
   tagline?: string;
   backgroundImage?: string;
+  latestEventTitle?: string;
+  latestGalleryImage?: string;
 }
 
 export function Hero({
   mosqueName = "Al Arqam",
   tagline = "Pusat Peradaban & Ukhuwah Islamiyah",
   backgroundImage = "/images/mosque-hero.jpg",
+  latestEventTitle = "Kajian Akbar 2026",
+  latestGalleryImage = "/images/mosque-hero.jpg",
 }: HeroProps) {
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden bg-slate-50 text-slate-900 selection:bg-emerald-200">
@@ -90,10 +94,10 @@ export function Hero({
              
              {/* Main Card Image */}
              <div className="relative h-full w-full rounded-[3rem] overflow-hidden border border-white shadow-2xl bg-white group">
-                <div 
+                <div
                   className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                  style={{ backgroundImage: `url('/images/mosque-hero.jpg')` }}
-                />
+                  style={{ backgroundImage: `url('${latestGalleryImage}')` }}
+                ></div>
                 
                 {/* Overlay Gradient (Light) */}
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent" />
@@ -103,7 +107,7 @@ export function Hero({
                    <div className="flex justify-between items-end">
                       <div>
                         <p className="text-emerald-600 text-xs font-bold uppercase tracking-wider mb-1">Next Event</p>
-                        <p className="text-slate-900 font-bold text-xl">Kajian Akbar 2026</p>
+                        <p className="text-slate-900 font-bold text-xl">{latestEventTitle}</p>
                       </div>
                       <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-900">
                         <ArrowRight className="w-5 h-5 -rotate-45" />

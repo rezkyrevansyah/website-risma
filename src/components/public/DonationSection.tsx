@@ -130,14 +130,14 @@ export function DonationSection({
                   />
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <div>
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0">
+                  <div className="text-center sm:text-left">
                     <p className="text-2xl font-bold text-primary">
                       {formatCurrency(donation.currentAmount)}
                     </p>
                     <p className="text-sm text-muted-foreground">Terkumpul</p>
                   </div>
-                  <div className="text-right">
+                  <div className="text-center sm:text-right">
                     <p className="text-2xl font-bold">
                       {formatCurrency(donation.goalAmount)}
                     </p>

@@ -4,6 +4,7 @@ import { getEvents } from "@/app/actions/events";
 import { getArticles } from "@/app/actions/articles";
 import { getGalleries } from "@/app/actions/gallery";
 import { getProfile } from "@/app/actions/profile";
+import { ExternalLink } from "lucide-react";
 
 export default async function AdminLayout({
   children,
@@ -30,6 +31,15 @@ export default async function AdminLayout({
           <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-40">
              <h2 className="font-semibold text-slate-700">Selamat Datang, {profile?.full_name || "Admin"}</h2>
              <div className="flex items-center gap-4">
+                <a 
+                  href="/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-600 rounded-lg text-sm font-medium hover:bg-emerald-100 transition-colors border border-emerald-200"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  Lihat Website
+                </a>
                 <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-xs uppercase">
                    {profile?.full_name?.substring(0, 2) || "AD"}
                 </div>

@@ -137,6 +137,14 @@ export function Header() {
                     <ArrowRight className="w-5 h-5 opacity-0 -translate-x-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 text-emerald-500" />
                   </Link>
                 ))}
+                 <Link
+                    href="/auth/login"
+                    onClick={() => setIsOpen(false)}
+                    className="group relative flex items-center justify-between px-4 py-4 rounded-xl text-lg font-medium text-slate-600 dark:text-slate-300 transition-all duration-300 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:text-emerald-700 dark:hover:text-emerald-400 lg:hidden"
+                  >
+                    <span className="relative z-10">Admin Login</span>
+                    <ArrowRight className="w-5 h-5 opacity-0 -translate-x-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 text-emerald-500" />
+                  </Link>
               </nav>
 
               {/* Sidebar Footer */}

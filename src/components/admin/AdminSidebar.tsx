@@ -11,7 +11,8 @@ import {
   Settings,
   LogOut,
   Landmark,
-  PiggyBank
+  PiggyBank,
+  UserCircle
 } from "lucide-react";
 
 const sidebarItems = [
@@ -44,6 +45,11 @@ const sidebarItems = [
     title: "Pengaturan",
     href: "/admin/settings",
     icon: Settings,
+  },
+  {
+    title: "Profil Admin",
+    href: "/admin/profile",
+    icon: UserCircle, // Need to import this
   },
 ];
 
@@ -82,7 +88,10 @@ export function AdminSidebar() {
 
       {/* Footer / Logout */}
       <div className="p-4 border-t border-slate-800">
-        <button className="flex items-center gap-3 px-3 py-2.5 w-full rounded-lg text-sm font-medium text-rose-400 hover:bg-rose-950/30 hover:text-rose-300 transition-colors">
+        <button 
+          onClick={() => import("@/app/actions/auth").then((mod) => mod.logout())}
+          className="flex items-center gap-3 px-3 py-2.5 w-full rounded-lg text-sm font-medium text-rose-400 hover:bg-rose-950/30 hover:text-rose-300 transition-colors"
+        >
           <LogOut className="w-5 h-5" />
           Keluar
         </button>

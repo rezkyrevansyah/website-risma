@@ -176,6 +176,15 @@ export async function Footer() {
       {/* Bottom Bar */}
       <div className="border-t border-slate-800 mt-12 pt-4 pb-4 text-center text-slate-500 text-sm">
           <p>© {currentYear} {settings?.site_name || "Masjid Jami' Al Arqam"}. All rights reserved.</p>
+          <div className="mt-4 flex justify-center">
+            <Link 
+              href="/auth/login" 
+              className="text-xs text-slate-600 hover:text-emerald-500 transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-slate-800/50"
+            >
+              <Landmark className="w-3 h-3" />
+              Admin Login
+            </Link>
+          </div>
       </div>
     </footer>
   );

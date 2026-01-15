@@ -2,9 +2,9 @@ import { NavItem, EventItem, ArticleItem, GalleryItem, DonationInfo } from "@/ty
 
 export const navItems: NavItem[] = [
   { label: "Beranda", href: "/" },
-  { label: "Agenda", href: "#agenda" },
-  { label: "Artikel", href: "#artikel" },
-  { label: "Galeri", href: "#galeri" },
+  { label: "Agenda", href: "/#agenda" },
+  { label: "Artikel", href: "/#artikel" },
+  { label: "Galeri", href: "/#galeri" },
   { label: "Tentang", href: "/tentang" },
 ];
 

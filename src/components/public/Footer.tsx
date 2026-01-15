@@ -14,9 +14,9 @@ export async function Footer() {
 
   const navLinks = [
     { label: "Beranda", href: "/" },
-    { label: "Agenda", href: "/agenda" },
-    { label: "Artikel", href: "/artikel" },
-    { label: "Galeri", href: "/galeri" },
+    { label: "Agenda", href: "/#agenda" },
+    { label: "Artikel", href: "/#artikel" },
+    { label: "Galeri", href: "/#galeri" },
     { label: "Tentang Kami", href: "/tentang" },
   ];
 
@@ -83,7 +83,7 @@ export async function Footer() {
 
           {/* Navigation Column */}
           <div>
-            <h4 className="text-lg font-semibold mb-6 text-white">Navigasi</h4>
+            <h3 className="text-lg font-semibold mb-6 text-white">Navigasi</h3>
             <ul className="space-y-3">
               {navLinks.map((link) => (
                 <li key={link.href}>
@@ -100,9 +100,9 @@ export async function Footer() {
 
           {/* Contact Column */}
           <div>
-            <h4 className="text-lg font-semibold mb-6 text-white">
+            <h3 className="text-lg font-semibold mb-6 text-white">
               Kontak Kami
-            </h4>
+            </h3>
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-emerald-light mt-0.5 flex-shrink-0" />
@@ -131,7 +131,7 @@ export async function Footer() {
 
           {/* Map Column */}
           <div>
-            <h4 className="text-lg font-semibold mb-6 text-white">Lokasi</h4>
+            <h3 className="text-lg font-semibold mb-6 text-white">Lokasi</h3>
             
              {settings?.map_url ? (
                   <a 
@@ -174,12 +174,12 @@ export async function Footer() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-slate-800 mt-12 pt-4 pb-4 text-center text-slate-500 text-sm">
+      <div className="border-t border-slate-800 mt-12 pt-4 pb-4 text-center text-slate-400 text-sm">
           <p>© {currentYear} {settings?.site_name || "Masjid Jami' Al Arqam"}. All rights reserved.</p>
           <div className="mt-4 flex justify-center">
             <Link 
               href="/auth/login" 
-              className="text-xs text-slate-600 hover:text-emerald-500 transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-slate-800/50"
+              className="text-xs text-slate-400 hover:text-emerald-500 transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-slate-800/50"
             >
               <Landmark className="w-3 h-3" />
               Admin Login

@@ -65,7 +65,7 @@ function AgendaCard({ event }: { event: EventItem }) {
           {event.title}
         </h3>
         
-        <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-4 font-medium">
+        <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 mb-4 font-medium">
           <Calendar className="w-4 h-4" />
           <span>{dayName}, {dateStr}</span>
           <span className="w-1 h-1 rounded-full bg-slate-300 mx-1" />
@@ -81,7 +81,7 @@ function AgendaCard({ event }: { event: EventItem }) {
 
       {/* Button Action */}
       <div className="flex items-center justify-between mt-auto">
-         <div className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-slate-400">
+         <div className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-slate-600">
             <MapPin className="w-3 h-3" />
             {event.location}
          </div>
@@ -121,7 +121,7 @@ export function AgendaSection({ events = [] }: { events?: EventItem[] }) {
           <div className="max-w-xl">
             <div className="inline-flex items-center gap-2 mb-3">
                <span className="w-8 h-1 bg-primary rounded-full"></span>
-               <span className="text-xs font-bold tracking-widest uppercase text-primary">AGENDA MASJID</span>
+               <span className="text-xs font-bold tracking-widest uppercase text-emerald-700 dark:text-emerald-400">AGENDA MASJID</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
               Kegiatan Terdekat

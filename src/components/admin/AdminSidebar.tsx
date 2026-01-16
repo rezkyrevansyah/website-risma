@@ -14,6 +14,8 @@ import {
   PiggyBank,
   UserCircle
 } from "lucide-react";
+import { motion } from "framer-motion";
+import { staggerContainer, fadeUp } from "@/lib/motion";
 
 const sidebarItems = [
   {
@@ -49,9 +51,14 @@ const sidebarItems = [
   {
     title: "Profil Admin",
     href: "/admin/profile",
-    icon: UserCircle, // Need to import this
+    icon: UserCircle,
   },
 ];
+
+const sidebarItemVariant = {
+  hidden: { opacity: 0, x: -20 },
+  show: { opacity: 1, x: 0 }
+};
 
 export function AdminSidebar() {
   const pathname = usePathname();
@@ -65,36 +72,50 @@ export function AdminSidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-6 px-3 space-y-1 overflow-y-auto">
+      <motion.nav
+        variants={staggerContainer(0.05)}
+        initial="hidden"
+        animate="show"
+        className="flex-1 py-6 px-3 space-y-1 overflow-y-auto"
+      >
         {sidebarItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href));
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                isActive
-                  ? "bg-emerald-600 text-white shadow-md shadow-emerald-900/20"
-                  : "text-slate-400 hover:text-white hover:bg-slate-800"
-              )}
             >
-              <item.icon className={cn("w-5 h-5", isActive ? "text-white" : "text-slate-500")} />
-              {item.title}
+              <motion.div
+                variants={sidebarItemVariant}
+                whileHover={{ x: 4 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                className={cn(
+                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                  isActive
+                    ? "bg-emerald-600 text-white shadow-md shadow-emerald-900/20"
+                    : "text-slate-400 hover:text-white hover:bg-slate-800"
+                )}
+              >
+                <item.icon className={cn("w-5 h-5", isActive ? "text-white" : "text-slate-500")} />
+                {item.title}
+              </motion.div>
             </Link>
           );
         })}
-      </nav>
+      </motion.nav>
 
       {/* Footer / Logout */}
       <div className="p-4 border-t border-slate-800">
-        <button 
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
           onClick={() => import("@/app/actions/auth").then((mod) => mod.logout())}
           className="flex items-center gap-3 px-3 py-2.5 w-full rounded-lg text-sm font-medium text-rose-400 hover:bg-rose-950/30 hover:text-rose-300 transition-colors"
         >
           <LogOut className="w-5 h-5" />
           Keluar
-        </button>
+        </motion.button>
       </div>
     </div>
   );

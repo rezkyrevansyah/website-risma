@@ -3,6 +3,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 
+import { z } from 'zod'
+
 export interface SiteSettings {
   id: number
   site_name: string
@@ -37,12 +39,34 @@ export async function getSiteSettings() {
 export async function updateSiteSettings(data: Partial<SiteSettings>) {
   const supabase = await createClient()
 
-  // 1. Verify Authentication - REMOVED based on user request and disabled RLS
-  // const { data: { user }, error: authError } = await supabase.auth.getUser()
-  // if (authError || !user) {
-  //    console.error("Update failed: User not authenticated", authError)
-  //    throw new Error("Unauthorized: You must be logged in to update settings.")
-  // }
+  // 1. Verify Authentication
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  if (authError || !user) {
+     console.error("Update failed: User not authenticated", authError)
+     throw new Error("Unauthorized: You must be logged in to update settings.")
+  }
+  
+  // 2. Validate Data
+  const settingsSchema = z.object({
+      site_name: z.string().optional(),
+      tagline: z.string().optional(),
+      description: z.string().optional(),
+      address: z.string().optional(),
+      phone: z.string().optional(),
+      email: z.string().email().optional().or(z.literal('')),
+      whatsapp: z.string().optional(),
+      instagram: z.string().optional(),
+      facebook: z.string().optional(),
+      youtube: z.string().optional(),
+      map_url: z.string().optional(),
+  })
+
+  const parseResult = settingsSchema.safeParse(data);
+  if (!parseResult.success) {
+      console.error("Validation failed:", parseResult.error);
+      throw new Error("Validation failed: " + JSON.stringify(parseResult.error.flatten().fieldErrors));
+  }
+
   
   // 2. Perform Upsert
   const { error } = await supabase

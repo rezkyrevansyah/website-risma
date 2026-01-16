@@ -3,6 +3,22 @@
 import { createClient } from '@/lib/supabase/server'
 import { ArticleItem } from '@/types'
 import { revalidatePath } from 'next/cache'
+import { z } from 'zod'
+
+const articleSchema = z.object({
+  title: z.string().min(1, "Judul wajib diisi"),
+  excerpt: z.string().min(1, "Ringkasan wajib diisi"),
+  content: z.string().min(1, "Konten wajib diisi"),
+  category: z.string().min(1, "Kategori wajib diisi"),
+  date: z.string().min(1, "Tanggal wajib diisi"),
+  readingTime: z.string().min(1, "Waktu baca wajib diisi"),
+  imageUrl: z.string().min(1, "Gambar wajib diisi"),
+  author: z.object({
+    name: z.string().min(1),
+    role: z.string().min(1),
+    avatarUrl: z.string().default(''),
+  })
+})
 
 export async function getArticles(limit?: number) {
   const supabase = await createClient()
@@ -72,6 +88,15 @@ export async function getArticleById(id: string) {
 
 export async function createArticle(item: Omit<ArticleItem, 'id'>) {
   const supabase = await createClient()
+
+  // 1. Verify Auth
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  if (authError || !user) throw new Error("Unauthorized")
+
+  // 2. Validate Input
+  const parseResult = articleSchema.safeParse(item)
+  if (!parseResult.success) throw new Error("Validation failed: " + JSON.stringify(parseResult.error.flatten().fieldErrors))
+
   
   const { data, error } = await supabase
     .from('articles')
@@ -102,6 +127,15 @@ export async function createArticle(item: Omit<ArticleItem, 'id'>) {
 
 export async function updateArticle(item: ArticleItem) {
     const supabase = await createClient()
+
+    // 1. Verify Auth
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) throw new Error("Unauthorized")
+
+    // 2. Validate Input
+    const parseResult = articleSchema.safeParse(item)
+    if (!parseResult.success) throw new Error("Validation failed: " + JSON.stringify(parseResult.error.flatten().fieldErrors))
+
     
     const { data, error } = await supabase
       .from('articles')
@@ -133,6 +167,11 @@ export async function updateArticle(item: ArticleItem) {
 
 export async function deleteArticle(id: string) {
   const supabase = await createClient()
+
+  // 1. Verify Auth
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  if (authError || !user) throw new Error("Unauthorized")
+
 
   // 1. Get image url to delete
   const { data: item } = await supabase

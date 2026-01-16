@@ -3,6 +3,17 @@
 import { createClient } from '@/lib/supabase/server'
 import { EventItem } from '@/types'
 import { revalidatePath } from 'next/cache'
+import { z } from 'zod'
+
+const eventSchema = z.object({
+  title: z.string().min(1, "Judul wajib diisi"),
+  date: z.string().min(1, "Tanggal wajib diisi"),
+  time: z.string().min(1, "Waktu wajib diisi"),
+  location: z.string().min(1, "Lokasi wajib diisi"),
+  category: z.enum(["kajian", "olahraga", "sosial", "lainnya"]),
+  description: z.string().min(1, "Deskripsi wajib diisi"),
+  imageUrl: z.string().min(1, "Gambar wajib diisi"),
+})
 
 export async function getEvents(limit?: number) {
   const supabase = await createClient()
@@ -92,6 +103,15 @@ export async function getEventById(id: string) {
 
 export async function createEvent(item: Omit<EventItem, 'id'>) {
     const supabase = await createClient()
+
+    // 1. Verify Auth
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) throw new Error("Unauthorized")
+
+    // 2. Validate Input
+    const parseResult = eventSchema.safeParse(item)
+    if (!parseResult.success) throw new Error("Validation failed: " + JSON.stringify(parseResult.error.flatten().fieldErrors))
+
     
     const { data, error } = await supabase
       .from('events')
@@ -118,6 +138,15 @@ export async function createEvent(item: Omit<EventItem, 'id'>) {
 
 export async function updateEvent(item: EventItem) {
     const supabase = await createClient()
+
+    // 1. Verify Auth
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) throw new Error("Unauthorized")
+
+    // 2. Validate Input
+    const parseResult = eventSchema.safeParse(item)
+    if (!parseResult.success) throw new Error("Validation failed: " + JSON.stringify(parseResult.error.flatten().fieldErrors))
+
     
     const { data, error } = await supabase
       .from('events')
@@ -145,6 +174,11 @@ export async function updateEvent(item: EventItem) {
 
 export async function deleteEvent(id: string) {
     const supabase = await createClient()
+
+    // 1. Verify Auth
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) throw new Error("Unauthorized")
+
   
     // Optional: delete image if exists (similar to articles)
     // Assuming image_url logic matches

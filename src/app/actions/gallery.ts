@@ -40,6 +40,11 @@ export async function getLatestGalleryItem() {
 
 export async function createGallery(item: Omit<GalleryItem, 'id' | 'likes'>) {
   const supabase = await createClient()
+
+  // 1. Verify Auth
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  if (authError || !user) throw new Error("Unauthorized")
+
   
   const { data, error } = await supabase
     .from('gallery')
@@ -63,6 +68,11 @@ export async function createGallery(item: Omit<GalleryItem, 'id' | 'likes'>) {
 
 export async function deleteGallery(id: string) {
   const supabase = await createClient()
+
+  // 1. Verify Auth
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  if (authError || !user) throw new Error("Unauthorized")
+
 
   // 1. Get the item first to find the image URL
   const { data: item, error: fetchError } = await supabase

@@ -37,6 +37,13 @@ export async function getDonationSettings() {
 export async function updateDonationSettings(data: DonationInfo) {
   const supabase = await createClient()
 
+  // 1. Verify Authentication
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  if (authError || !user) {
+     throw new Error("Unauthorized: You must be logged in to update donation settings.")
+  }
+
+
   // Map camelCase from app to snake_case for DB
   const dbData = {
     bank_name: data.bankName,

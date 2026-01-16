@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
         pathname: '/storage/v1/object/public/**',
       },
     ],
+    minimumCacheTTL: 31536000,
+  },
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'framer-motion', '@supabase/ssr'],
   },
 };
 

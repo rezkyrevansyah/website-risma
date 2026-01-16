@@ -51,35 +51,30 @@ export function Hero({
       <div className="relative z-10 w-full container-custom px-4 md:px-6 pt-32 pb-32">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
 
-          {/* Text Content - Staggered */}
-          <motion.div
-            variants={staggerContainer(0.1, 0.2)}
-            initial="hidden"
-            animate="show"
-            className="lg:col-span-7 space-y-8"
-          >
+          {/* Text Content - Staggered via CSS for LCP */}
+          <div className="lg:col-span-7 space-y-8">
 
             {/* Supertag */}
-            <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 text-xs font-bold tracking-[0.2em] uppercase">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 text-xs font-bold tracking-[0.2em] uppercase animate-fade-up [animation-delay:200ms] opacity-0 fill-mode-forwards">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
               Est. 1990 • Pusat Dakwah
-            </motion.div>
+            </div>
 
             {/* Typography */}
-            <motion.h1 variants={fadeUp} className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.1] sm:leading-[0.9] text-slate-900 mt-4 sm:mt-0">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.1] sm:leading-[0.9] text-slate-900 mt-4 sm:mt-0 animate-fade-up [animation-delay:300ms] opacity-0 fill-mode-forwards">
               MASJID <br />
               <span className="font-serif italic font-normal text-emerald-600">Jami&apos;</span> {mosqueName}
-            </motion.h1>
+            </h1>
 
-            <motion.p variants={fadeUp} className="text-base sm:text-lg md:text-xl text-slate-600 max-w-xl leading-relaxed border-l-2 border-emerald-500/30 pl-4 sm:pl-6">
+            <p className="text-base sm:text-lg md:text-xl text-slate-600 max-w-xl leading-relaxed border-l-2 border-emerald-500/30 pl-4 sm:pl-6 animate-fade-up [animation-delay:400ms] opacity-0 fill-mode-forwards">
               Pusat peribadatan dan pengembangan umat. Membangun masyarakat madani yang berlandaskan iman, ilmu, dan amal shaleh.
-            </motion.p>
+            </p>
 
             {/* Action Group */}
-            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-4 animate-fade-up [animation-delay:500ms] opacity-0 fill-mode-forwards">
               <Link href="#agenda">
                 <Button
                   size="lg"
@@ -102,8 +97,8 @@ export function Hero({
                   Tentang Kami
                 </Button>
               </Link>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
 
           {/* Visual/Image Area (Right) */}
           <div className="lg:col-span-5 relative hidden lg:block h-[600px]">

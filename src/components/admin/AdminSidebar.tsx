@@ -84,6 +84,7 @@ export function AdminSidebar() {
             <Link
               key={item.href}
               href={item.href}
+              aria-current={isActive ? "page" : undefined}
             >
               <motion.div
                 variants={sidebarItemVariant}

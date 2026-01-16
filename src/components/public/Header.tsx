@@ -100,13 +100,14 @@ export function Header() {
 
           {/* CTA Button + Mobile Menu */}
           <div className="flex items-center gap-3">
-            <Link href="#donasi">
-              <Button
-                className="hidden sm:flex bg-slate-900 hover:bg-slate-800 text-white font-semibold shadow-lg hover:scale-105 transition-all"
-              >
+            <Button
+              asChild
+              className="hidden sm:flex bg-slate-900 hover:bg-slate-800 text-white font-semibold shadow-lg hover:scale-105 transition-all"
+            >
+              <Link href="#donasi">
                 Donasi
-              </Button>
-            </Link>
+              </Link>
+            </Button>
 
             {/* Mobile Menu */}
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -183,13 +184,14 @@ export function Header() {
 
                 {/* Sidebar Footer */}
                 <div className="p-6 bg-slate-50/50 dark:bg-black/20 border-t border-slate-100 dark:border-slate-800">
-                  <Link href="#donasi" onClick={() => setIsOpen(false)}>
-                    <Button
-                      className="w-full h-12 rounded-xl text-md font-bold bg-slate-900 text-white hover:bg-slate-800 shadow-xl shadow-slate-900/10 transition-all hover:scale-[1.02]"
-                    >
+                  <Button
+                    asChild
+                    className="w-full h-12 rounded-xl text-md font-bold bg-slate-900 text-white hover:bg-slate-800 shadow-xl shadow-slate-900/10 transition-all hover:scale-[1.02]"
+                  >
+                    <Link href="#donasi" onClick={() => setIsOpen(false)}>
                       Donasi Sekarang
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
                   <div className="mt-6 text-center">
                     <p className="text-xs text-slate-400 font-medium">
                       © 2026 Masjid Jami' Al Arqam

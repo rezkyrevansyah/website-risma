@@ -1,6 +1,7 @@
 import {
   Header,
   Hero,
+  CountdownSection,
   AgendaSection,
   ArticleSection,
   GallerySection,
@@ -10,6 +11,7 @@ import {
 import { getGalleries, getLatestGalleryItem } from "@/app/actions/gallery";
 import { getEvents, getLatestEvent } from "@/app/actions/events";
 import { getDonationSettings } from "@/app/actions/donations";
+import { getCountdownSettings } from "@/app/actions/countdown";
 
 export default async function HomePage() {
   const galleryData = await getGalleries();
@@ -17,6 +19,7 @@ export default async function HomePage() {
   const latestGallery = await getLatestGalleryItem();
   const latestEvent = await getLatestEvent();
   const donationSettings = await getDonationSettings();
+  const countdownSettings = await getCountdownSettings();
 
   return (
     <>
@@ -28,6 +31,16 @@ export default async function HomePage() {
           latestEventTitle={latestEvent?.title}
           latestGalleryImage={latestGallery?.src}
         />
+
+        {/* Dynamic Countdown Section from CMS */}
+        {countdownSettings?.is_active && (
+          <CountdownSection
+            targetDate={countdownSettings.target_date}
+            eventName={countdownSettings.title}
+            description={countdownSettings.description}
+          />
+        )}
+
         <AgendaSection events={eventsData} />
         <ArticleSection />
         <GallerySection initialData={galleryData} />

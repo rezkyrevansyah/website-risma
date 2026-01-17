@@ -26,7 +26,9 @@ interface AdminContextType {
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
-const EMPTY_ARRAY: any[] = [];
+const EMPTY_EVENTS: EventItem[] = [];
+const EMPTY_ARTICLES: ArticleItem[] = [];
+const EMPTY_GALLERIES: GalleryItem[] = [];
 
 interface AdminProviderProps {
   children: React.ReactNode;
@@ -35,11 +37,11 @@ interface AdminProviderProps {
   initialGalleries?: GalleryItem[];
 }
 
-export function AdminProvider({ 
+export function AdminProvider({
   children,
-  initialEvents = EMPTY_ARRAY,
-  initialArticles = EMPTY_ARRAY,
-  initialGalleries = EMPTY_ARRAY
+  initialEvents = EMPTY_EVENTS,
+  initialArticles = EMPTY_ARTICLES,
+  initialGalleries = EMPTY_GALLERIES
 }: AdminProviderProps) {
   // Initialize state with props
   const [events, setEvents] = useState<EventItem[]>(initialEvents);
@@ -64,71 +66,71 @@ export function AdminProvider({
     // Optimistic update
     setEvents((prev) => [event, ...prev]);
     try {
-        await createEvent(event);
+      await createEvent(event);
     } catch (error) {
-        console.error("Failed to add event", error);
-        // Rollback? For now simple optimistic or just rely on revalidate
+      console.error("Failed to add event", error);
+      // Rollback? For now simple optimistic or just rely on revalidate
     }
   };
 
   const updateEventFn = async (event: EventItem) => {
     setEvents((prev) => prev.map((e) => (e.id === event.id ? event : e)));
     try {
-        await updateEvent(event);
+      await updateEvent(event);
     } catch (error) {
-        console.error("Failed to update event", error);
+      console.error("Failed to update event", error);
     }
   };
 
   const deleteEventFn = async (id: string) => {
     setEvents((prev) => prev.filter((e) => e.id !== id));
     try {
-        await deleteEventAction(id);
+      await deleteEventAction(id);
     } catch (error) {
-        console.error("Failed to delete event", error);
+      console.error("Failed to delete event", error);
     }
   };
 
   const addArticle = async (article: ArticleItem) => {
     setArticles((prev) => [article, ...prev]);
     try {
-        await createArticle(article);
+      await createArticle(article);
     } catch (error) {
-        console.error("Failed to add article", error);
+      console.error("Failed to add article", error);
     }
   };
 
   const updateArticleFn = async (article: ArticleItem) => {
     setArticles((prev) => prev.map((a) => (a.id === article.id ? article : a)));
     try {
-        await updateArticle(article);
+      await updateArticle(article);
     } catch (error) {
-        console.error("Failed to update article", error);
+      console.error("Failed to update article", error);
     }
   };
 
   const deleteArticleFn = async (id: string) => {
     setArticles((prev) => prev.filter((a) => a.id !== id));
     try {
-        await deleteArticleAction(id);
+      await deleteArticleAction(id);
     } catch (error) {
-        console.error("Failed to delete article", error);
+      console.error("Failed to delete article", error);
     }
   };
 
   // Gallery actions - assuming we want to use server actions here too
   const updateGallery = async (gallery: GalleryItem) => {
-     // Gallery update might not be implemented in server actions yet, 
-     // but keeping signature. If no action, just state.
-     setGalleries((prev) => prev.map((g) => (g.id === gallery.id ? gallery : g)));
+    // Gallery update might not be implemented in server actions yet, 
+    // but keeping signature. If no action, just state.
+    setGalleries((prev) => prev.map((g) => (g.id === gallery.id ? gallery : g)));
   };
 
   const deleteGalleryFn = async (id: string) => {
     setGalleries((prev) => prev.filter((g) => g.id !== id));
     try {
-        await deleteGalleryAction(id);
+      await deleteGalleryAction(id);
     } catch (error) {
-        console.error("Failed to delete gallery", error);
+      console.error("Failed to delete gallery", error);
     }
   };
 

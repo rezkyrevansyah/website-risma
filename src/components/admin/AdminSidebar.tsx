@@ -12,16 +12,22 @@ import {
   LogOut,
   Landmark,
   PiggyBank,
-  UserCircle
+  UserCircle,
+  Timer
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { staggerContainer, fadeUp } from "@/lib/motion";
 
-const sidebarItems = [
+export const sidebarItems = [
   {
     title: "Dashboard",
     href: "/admin",
     icon: LayoutDashboard,
+  },
+  {
+    title: "Countdown",
+    href: "/admin/countdown",
+    icon: Timer,
   },
   {
     title: "Agenda",

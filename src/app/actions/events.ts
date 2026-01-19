@@ -12,7 +12,7 @@ const eventSchema = z.object({
   location: z.string().min(1, "Lokasi wajib diisi"),
   category: z.enum(["kajian", "olahraga", "sosial", "lainnya"]),
   description: z.string().min(1, "Deskripsi wajib diisi"),
-  imageUrl: z.string().min(1, "Gambar wajib diisi"),
+  imageUrl: z.string().optional(),
 })
 
 export async function getEvents(limit?: number) {

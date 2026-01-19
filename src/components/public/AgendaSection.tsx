@@ -19,12 +19,9 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
 
 import { EventItem, EventCategory } from "@/types";
-import { dummyEvents } from "@/data";
 import { CarouselApi } from "@/components/ui/carousel";
 
 const categoryIcons: Record<EventCategory, React.ReactNode> = {
@@ -46,6 +43,21 @@ function AgendaCard({ event }: { event: EventItem }) {
   const dayName = dateObj.toLocaleDateString("id-ID", { weekday: "long" });
   const dateStr = dateObj.toLocaleDateString("id-ID", { day: "numeric", month: "long" });
 
+  // Calculate status
+  const now = new Date();
+  // Reset time part for accurate date comparison if needed, but requirements say "Tanggal kegiatan sudah lewat dari tanggal hari ini"
+  // Let's keep it simple: strict comparison of dates could arguably look at time too, but usually strict date comparison assumes end of day.
+  // Requirement: "Tanggal kegiatan sudah lewat dari tanggal hari ini" -> "Sudah Selesai"
+  // Requirement: "Tanggal kegiatan sama dengan hari ini atau masih akan datang" -> "Akan Datang"
+  
+  // Set comparison to beginning of day to be safe, or just compare direct timestamps if date string is YYYY-MM-DD
+  const eventDate = new Date(event.date); // Assuming YYYY-MM-DD or ISO
+  eventDate.setHours(0,0,0,0);
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  const isFinished = eventDate < today;
+  
   return (
     <div className="group relative bg-white dark:bg-slate-800 rounded-[2rem] p-8 shadow-sm hover:shadow-xl transition-all duration-300 h-full border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
       
@@ -55,13 +67,20 @@ function AgendaCard({ event }: { event: EventItem }) {
           <div className={`w-14 h-14 rounded-2xl ${categoryGradients[event.category]} flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300`}>
             {categoryIcons[event.category]}
           </div>
-          {/* Faint Background Icon Decoration */}
-          <div className="opacity-5 scale-150 grayscale">
-             {categoryIcons[event.category]}
-          </div>
+           {/* Status Label */}
+           <Badge 
+            variant={isFinished ? "secondary" : "default"}
+            className={`${
+              isFinished 
+                ? "bg-slate-100 text-slate-500 hover:bg-slate-200" 
+                : "bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border-emerald-100"
+              } border border-transparent shadow-none px-3 py-1 text-xs font-bold uppercase tracking-wider`}
+          >
+            {isFinished ? "Sudah Selesai" : "Akan Datang"}
+          </Badge>
         </div>
 
-        <h3 className="text-2xl font-bold mb-2 group-hover:text-primary transition-colors">
+        <h3 className="text-2xl font-bold mb-2 group-hover:text-primary transition-colors line-clamp-2">
           {event.title}
         </h3>
         
@@ -119,62 +138,73 @@ export function AgendaSection({ events = [] }: { events?: EventItem[] }) {
       <div className="container-custom">
         <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-8 md:mb-12 gap-6">
           <div className="max-w-xl">
-            <div className="inline-flex items-center gap-2 mb-3">
-               <span className="w-8 h-1 bg-primary rounded-full"></span>
-               <span className="text-xs font-bold tracking-widest uppercase text-emerald-700 dark:text-emerald-400">AGENDA MASJID</span>
-            </div>
+             <div className="inline-flex items-center gap-2 mb-3 px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 w-fit">
+                <Calendar className="w-3.5 h-3.5" />
+                <span className="text-xs font-bold tracking-widest uppercase">AGENDA MASJID</span>
+             </div>
             <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
               Kegiatan Terdekat
             </h2>
           </div>
           
-          {/* Custom Header Buttons */}
-          <div className="flex gap-2 relative z-10 self-end md:self-auto">
-             <Button 
-               onClick={() => api?.scrollPrev()} 
-               variant="outline" 
-               size="icon" 
-               aria-label="Previous agenda"
-               className="h-12 w-12 rounded-full border-slate-200 bg-white hover:bg-slate-50 hover:text-primary transition-all shadow-sm"
-             >
-               <ChevronLeft className="w-6 h-6" />
-             </Button>
-             <Button 
-               onClick={() => api?.scrollNext()} 
-               variant="outline" 
-               size="icon" 
-               aria-label="Next agenda"
-               className="h-12 w-12 rounded-full border-slate-200 bg-white hover:bg-slate-50 hover:text-primary transition-all shadow-sm"
-             >
-               <ChevronRight className="w-6 h-6" />
-             </Button>
-          </div>
+          {/* Custom Header Buttons - Only show if there are events */}
+          {events.length > 0 && (
+            <div className="flex gap-2 relative z-10 self-end md:self-auto">
+               <Button 
+                 onClick={() => api?.scrollPrev()} 
+                 variant="outline" 
+                 size="icon" 
+                 aria-label="Previous agenda"
+                 className="h-12 w-12 rounded-full border-slate-200 bg-white hover:bg-slate-50 hover:text-primary transition-all shadow-sm"
+               >
+                 <ChevronLeft className="w-6 h-6" />
+               </Button>
+               <Button 
+                 onClick={() => api?.scrollNext()} 
+                 variant="outline" 
+                 size="icon" 
+                 aria-label="Next agenda"
+                 className="h-12 w-12 rounded-full border-slate-200 bg-white hover:bg-slate-50 hover:text-primary transition-all shadow-sm"
+               >
+                 <ChevronRight className="w-6 h-6" />
+               </Button>
+            </div>
+          )}
         </div>
 
-        {/* Carousel */}
+        {/* Content */}
         <div className="relative">
-          <Carousel
-            setApi={setApi}
-            opts={{
-              align: "start",
-              loop: true,
-            }}
-            className="w-full"
-          >
-            <CarouselContent className="-ml-4 pb-4">
-              {events.map((event) => (
-                <CarouselItem key={event.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
-                  <div className="h-full">
-                    <AgendaCard event={event} />
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            {/* Native Buttons Removed */}
-          </Carousel>
+          {events.length > 0 ? (
+            <Carousel
+              setApi={setApi}
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+              className="w-full"
+            >
+              <CarouselContent className="-ml-4 pb-4">
+                {events.map((event) => (
+                  <CarouselItem key={event.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
+                    <div className="h-full">
+                      <AgendaCard event={event} />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
+          ) : (
+            // Empty State
+            <div className="text-center py-20 bg-white dark:bg-slate-800 rounded-[2rem] border border-dashed border-slate-200 dark:border-slate-700">
+              <div className="flex flex-col items-center justify-center gap-4">
+                <div className="w-16 h-16 rounded-full bg-slate-50 dark:bg-slate-700 flex items-center justify-center">
+                   <Calendar className="w-8 h-8 text-slate-400" />
+                </div>
+                <p className="text-slate-500 dark:text-slate-400 font-medium">Belum ada agenda terdekat</p>
+              </div>
+            </div>
+          )}
         </div>
-        
-        {/* Mobile Warning/Action (Optional, maybe remove if Header buttons work well) */}
       </div>
     </section>
   );

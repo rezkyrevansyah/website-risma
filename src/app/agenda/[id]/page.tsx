@@ -4,9 +4,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getEventById } from "@/app/actions/events";
 import { ShareButton } from "@/components/public/ShareButton"; 
-// I will need to create ShareButton or inline the client logic in a separate file. 
-// For now, I'll create a new component file for the interactive parts or just use a simple button.
-// Actually, I can put the share button in a separate file.
 
 interface AgendaDetailPageProps {
   params: Promise<{
@@ -27,6 +24,13 @@ export default async function AgendaDetailPage(props: AgendaDetailPageProps) {
   const dayName = dateObj.toLocaleDateString("id-ID", { weekday: "long" });
   const dateStr = dateObj.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
 
+  // Calculate status
+  const eventDate = new Date(event.date);
+  eventDate.setHours(0,0,0,0);
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const isFinished = eventDate < today;
+
   return (
     <main className="min-h-screen bg-white text-slate-900 pt-24 pb-20">
       <div className="container-custom px-4 md:px-6">
@@ -43,9 +47,21 @@ export default async function AgendaDetailPage(props: AgendaDetailPageProps) {
           <div className="lg:col-span-7 space-y-8">
             {/* Header Content */}
             <div className="space-y-4">
-               <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-full px-4 py-1 text-xs tracking-wider uppercase font-bold border-none">
-                  {event.category}
-               </Badge>
+               <div className="flex flex-wrap items-center gap-3">
+                 <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-full px-4 py-1 text-xs tracking-wider uppercase font-bold border-none">
+                    {event.category}
+                 </Badge>
+                 <Badge 
+                    variant={isFinished ? "secondary" : "default"}
+                    className={`${
+                      isFinished 
+                        ? "bg-slate-100 text-slate-500 hover:bg-slate-200" 
+                        : "bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border-emerald-100"
+                      } border border-transparent shadow-none px-3 py-1 text-xs font-bold uppercase tracking-wider`}
+                 >
+                    {isFinished ? "Sudah Selesai" : "Akan Datang"}
+                 </Badge>
+               </div>
                <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.1]">
                   {event.title}
                </h1>

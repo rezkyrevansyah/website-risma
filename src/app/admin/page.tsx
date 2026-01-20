@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Image from "next/image";
 import { 
   Calendar, 
   FileText, 
@@ -24,7 +25,7 @@ export default function AdminDashboardPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Dashboard Overview</h1>
-        <p className="text-slate-500 mt-2">Ringkasan aktivitas website Masjid Jami' Al Arqam.</p>
+        <p className="text-slate-500 mt-2">Ringkasan aktivitas website Masjid Jami&apos; Al Arqam.</p>
       </div>
 
       {/* Stats Grid */}
@@ -123,7 +124,7 @@ export default function AdminDashboardPage() {
                         <div className="w-16 h-16 bg-slate-200 rounded-lg overflow-hidden relative shrink-0">
                            {/* Placeholder for image */}
                            {article.imageUrl ? (
-                              <img src={article.imageUrl} alt={article.title} className="w-full h-full object-cover" />
+                              <Image src={article.imageUrl} alt={article.title} fill className="object-cover" />
                            ) : (
                               <div className="absolute inset-0 bg-slate-300" />
                            )}

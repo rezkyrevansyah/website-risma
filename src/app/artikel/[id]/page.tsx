@@ -2,10 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Clock, Share2, ArrowRight } from "lucide-react";
+import { Share2, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { useParams, notFound } from "next/navigation";
+import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { getArticleById, getArticles } from "@/app/actions/articles";

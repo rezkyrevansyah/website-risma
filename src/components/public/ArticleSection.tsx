@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Calendar, User, BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, Calendar, BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
@@ -50,7 +50,7 @@ export function ArticleSection() {
               Artikel Terbaru
             </h2>
             <p className="text-slate-500 text-lg">
-              Baca artikel-artikel islami, ringkasan kajian, dan berita terbaru dari kegiatan Masjid Jami'.
+              Baca artikel-artikel islami, ringkasan kajian, dan berita terbaru dari kegiatan Masjid Jami&apos;.
             </p>
           </div>
           

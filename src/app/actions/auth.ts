@@ -17,7 +17,7 @@ const signupSchema = z.object({
   password: z.string().min(1, "Password wajib diisi"),
 });
 
-export async function login(prevState: any, formData: FormData) {
+export async function login(prevState: unknown, formData: FormData) {
   const identifier = formData.get("email") as string; // We reuse 'email' field name for identifier
   const password = formData.get("password") as string;
 
@@ -68,7 +68,7 @@ export async function login(prevState: any, formData: FormData) {
   redirect("/admin");
 }
 
-export async function signup(prevState: any, formData: FormData) {
+export async function signup(prevState: unknown, formData: FormData) {
   const fullName = formData.get("fullName") as string;
   const username = formData.get("username") as string;
   const email = formData.get("email") as string;

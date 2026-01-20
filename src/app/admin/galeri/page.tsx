@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
@@ -54,7 +55,7 @@ export default function GalleryAdminPage() {
     try {
       const data = await getGalleries();
       setDataList(data);
-    } catch (error) {
+    } catch {
       toast.error("Gagal memuat data galeri");
     } finally {
       setIsLoading(false);
@@ -194,7 +195,7 @@ export default function GalleryAdminPage() {
          src: item.src,
          alt: item.alt,
          caption: item.caption,
-         category: item.category as any,
+         category: item.category as GalleryCategory,
       });
       setIsDialogOpen(true);
   };
@@ -210,7 +211,7 @@ export default function GalleryAdminPage() {
         await deleteGallery(deleteId);
         toast.success("Foto berhasil dihapus");
         await loadData();
-      } catch (error) {
+      } catch {
         toast.error("Gagal menghapus foto");
       } finally {
          setIsDeleteOpen(false);
@@ -254,7 +255,7 @@ export default function GalleryAdminPage() {
           {filteredData.map((item) => (
             <div key={item.id} className="group relative bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
               <div className="relative aspect-square bg-slate-100">
-                 <img src={item.src} alt={item.alt} className="w-full h-full object-cover" />
+                 <Image src={item.src} alt={item.alt} fill className="object-cover" />
                  
                  {/* Overlay Actions */}
                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
@@ -306,7 +307,7 @@ export default function GalleryAdminPage() {
               <div className="flex items-start gap-4">
                   <div className="w-24 h-24 bg-slate-100 rounded-lg border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden relative group">
                       {previewUrl ? (
-                        <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
+                        <Image src={previewUrl} alt="Preview" fill className="object-cover" />
                       ) : (
                         <ImageIcon className="w-8 h-8 text-slate-400" />
                       )}

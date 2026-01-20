@@ -3,23 +3,18 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
-  Play, 
-  ArrowRight, 
   Camera, 
-  Instagram, 
   Image as ImageIcon,
   ChevronLeft,
   ChevronRight
 } from "lucide-react";
-import Link from "next/link";
+
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 
@@ -29,23 +24,12 @@ import { CarouselApi } from "@/components/ui/carousel";
 
 export function GallerySection({ initialData }: { initialData?: GalleryItem[] }) {
   const [api, setApi] = useState<CarouselApi>()
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [current, setCurrent] = useState(0)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [count, setCount] = useState(0)
-  const [showInfo, setShowInfo] = useState(true);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const fullscreenRef = useState<{ [key: string]: HTMLDivElement | null }>({})[0]; // Using a map ref approach or simpler single ref? 
-  // actually, simpler state-based approach for the active item or just a general ref if we only open one dialog at a time.
-  // Since carousel items map, let's just use a ref for the currently open content if possible, or simpler: 
-  // We can't easily use one ref for all map items unless we track the active one. 
-  // However, the Dialog is inside the map. This means each item has its own Dialog. 
-  // Let's create a sub-component for the Gallery Item to handle its own state cleanly, 
-  // OR we can keep it here but we need to be careful about hooks in loops.
-  // Actually, hooks inside map is BAD. 
-  // Wait, the current code has `displayItems.map(...)`.
-  // Inside the map, it returns `CarouselItem`.
-  // If I add `useState` inside the map loop (inline), it violates React rules.
-  // I MUST extract the `GalleryModalItem` into a separate component.
-  
+
   // Use initialData if available, otherwise fallback to empty (or static)
   const displayItems = initialData || [];
 
@@ -54,8 +38,8 @@ export function GallerySection({ initialData }: { initialData?: GalleryItem[] })
       return
     }
  
-    setCount(api.scrollSnapList().length)
-    setCurrent(api.selectedScrollSnap() + 1)
+    setCount(api.scrollSnapList().length) // eslint-disable-line react-hooks/set-state-in-effect
+    setCurrent(api.selectedScrollSnap() + 1) // eslint-disable-line react-hooks/set-state-in-effect
  
     api.on("select", () => {
       setCurrent(api.selectedScrollSnap() + 1)
@@ -78,7 +62,7 @@ export function GallerySection({ initialData }: { initialData?: GalleryItem[] })
               Galeri Kegiatan
             </h2>
             <p className="text-slate-500 text-lg leading-relaxed">
-              Momen-momen berharga kebersamaan dan keceriaan dalam setiap agenda Masjid Jami'.
+              Momen-momen berharga kebersamaan dan keceriaan dalam setiap agenda Masjid Jami&apos;.
             </p>
           </div>
           
@@ -153,6 +137,7 @@ function GalleryModalItem({ item, shapeClass }: { item: GalleryItem, shapeClass:
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       containerRef.current?.requestFullscreen().catch((err: any) => {
         console.error(`Error attempting to enable fullscreen: ${err.message}`);
       });

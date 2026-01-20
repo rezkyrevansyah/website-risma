@@ -1,5 +1,5 @@
 import { getProfile } from "@/app/actions/profile";
-import { UserCircle, Mail, Hash, Calendar } from "lucide-react";
+import { UserCircle, Mail, Hash } from "lucide-react";
 
 export default async function AdminProfilePage() {
   const profile = await getProfile();

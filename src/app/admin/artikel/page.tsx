@@ -163,7 +163,7 @@ export default function ArticleAdminPage() {
       resetForm();
       await loadData();
 
-    } catch (error: any) {
+    } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
       console.error(error);
       toast.error(error.message || "Terjadi kesalahan saat menyimpan");
     } finally {
@@ -226,7 +226,7 @@ export default function ArticleAdminPage() {
         await deleteArticle(deleteId);
         toast.success("Artikel berhasil dihapus");
         await loadData();
-      } catch (error) {
+      } catch {
         toast.error("Gagal menghapus artikel");
       } finally {
         setIsDeleteOpen(false);
@@ -362,7 +362,7 @@ export default function ArticleAdminPage() {
                <div className="flex items-start gap-4">
                   <div className="w-32 h-20 bg-slate-100 rounded-lg border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden relative group">
                      {previewUrl ? (
-                        <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
+                        <Image src={previewUrl} alt="Preview" fill className="object-cover" />
                      ) : (
                         <ImageIcon className="w-8 h-8 text-slate-400" />
                      )}

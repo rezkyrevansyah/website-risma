@@ -16,7 +16,7 @@ import {
   Timer
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { staggerContainer, fadeUp } from "@/lib/motion";
+import { staggerContainer } from "@/lib/motion";
 
 export const sidebarItems = [
   {

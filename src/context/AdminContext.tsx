@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { EventItem, ArticleItem, GalleryItem } from "@/types";
 import { createEvent, updateEvent, deleteEvent as deleteEventAction } from "@/app/actions/events";
 import { createArticle, updateArticle, deleteArticle as deleteArticleAction } from "@/app/actions/articles";
-import { createGallery, deleteGallery as deleteGalleryAction } from "@/app/actions/gallery";
+import { deleteGallery as deleteGalleryAction } from "@/app/actions/gallery";
 
 interface AdminContextType {
   events: EventItem[];

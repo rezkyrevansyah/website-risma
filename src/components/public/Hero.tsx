@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowRight, Calendar, Play } from "lucide-react";
 import { motion } from "framer-motion";
-import { fadeUp, staggerContainer, transitions } from "@/lib/motion";
+import { transitions } from "@/lib/motion";
 
 interface HeroProps {
   mosqueName?: string;
@@ -16,7 +16,9 @@ interface HeroProps {
 
 export function Hero({
   mosqueName = "Al Arqam",
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   tagline = "Pusat Peradaban & Ukhuwah Islamiyah",
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   backgroundImage = "/images/mosque-hero.jpg",
   latestEventTitle = "Kajian Akbar 2026",
   latestGalleryImage = "/images/mosque-hero.jpg",

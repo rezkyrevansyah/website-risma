@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 
 type ActionState = {
   message?: string;
@@ -26,7 +26,7 @@ const initialState: ActionState = {
 export function LoginForm() {
   const [state, formAction, isPending] = useActionState(login, initialState);
   const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter();
+  // const router = useRouter(); // Unused
 
   useEffect(() => {
     if (state?.message) {

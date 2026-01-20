@@ -60,7 +60,7 @@ export default function DonationAdminPage() {
     fetchData();
   }, [donationForm]);
 
-  const onDonationSubmit = async (data: any) => {
+  const onDonationSubmit = async (data: DonationValues) => {
     try {
       setSaving(true);
       await updateDonationSettings(data);

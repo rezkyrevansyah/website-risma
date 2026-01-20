@@ -34,7 +34,7 @@ export async function getCountdownSettings(): Promise<CountdownSettings | null> 
     return data as CountdownSettings;
 }
 
-export async function updateCountdownSettings(prevState: any, formData: FormData) {
+export async function updateCountdownSettings(prevState: unknown, formData: FormData) {
     const supabase = await createClient();
 
     const title = formData.get("title") as string;

@@ -39,6 +39,7 @@ export async function getArticles(limit?: number) {
   }
 
   // Map DB columns to ArticleItem (camelCase)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return data.map((item: any) => ({
     id: item.id,
     title: item.title,

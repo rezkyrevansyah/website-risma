@@ -11,7 +11,7 @@ import { Plus, Pencil, Trash2, Search, Calendar, MapPin, Clock } from "lucide-re
 import { Badge } from "@/components/ui/badge";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { Controller } from "react-hook-form";
-import { useAgendaLogic, EventFormValues, eventFormSchema } from "@/hooks/useAgendaLogic";
+import { useAgendaLogic } from "@/hooks/useAgendaLogic";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Helper component for expandable description
@@ -50,7 +50,7 @@ function ExpandableDescription({ content }: { content: string }) {
 }
 
 import React from "react";
-import { EventCategory } from "@/types";
+
 
 export default function AgendaAdminPage() {
   const {

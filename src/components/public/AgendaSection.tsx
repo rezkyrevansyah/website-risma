@@ -44,7 +44,6 @@ function AgendaCard({ event }: { event: EventItem }) {
   const dateStr = dateObj.toLocaleDateString("id-ID", { day: "numeric", month: "long" });
 
   // Calculate status
-  const now = new Date();
   // Reset time part for accurate date comparison if needed, but requirements say "Tanggal kegiatan sudah lewat dari tanggal hari ini"
   // Let's keep it simple: strict comparison of dates could arguably look at time too, but usually strict date comparison assumes end of day.
   // Requirement: "Tanggal kegiatan sudah lewat dari tanggal hari ini" -> "Sudah Selesai"
@@ -117,7 +116,10 @@ function AgendaCard({ event }: { event: EventItem }) {
 
 export function AgendaSection({ events = [] }: { events?: EventItem[] }) {
   const [api, setApi] = useState<CarouselApi>()
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [current, setCurrent] = useState(0)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [count, setCount] = useState(0)
 
   useEffect(() => {
@@ -131,6 +133,7 @@ export function AgendaSection({ events = [] }: { events?: EventItem[] }) {
     api.on("select", () => {
       setCurrent(api.selectedScrollSnap() + 1)
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [api])
 
   return (

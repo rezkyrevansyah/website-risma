@@ -131,7 +131,7 @@ export function SettingsForm({ initialData }: SettingsFormProps) {
                 <Label htmlFor="map_url">Link Google Maps (Embed)</Label>
                 <Input id="map_url" {...form.register("map_url")} placeholder="https://www.google.com/maps/embed?..." />
                 <p className="text-xs text-slate-500">
-                    Masukan URL dari fitur "Embed a map" atau "Sematkan peta" di Google Maps.
+                    Masukan URL dari fitur &quot;Embed a map&quot; atau &quot;Sematkan peta&quot; di Google Maps.
                 </p>
               </div>
             </CardContent>

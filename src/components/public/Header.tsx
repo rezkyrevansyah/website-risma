@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, Landmark, ArrowRight } from "lucide-react";
+import { Menu, Landmark, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
@@ -59,7 +59,7 @@ export function Header() {
                   isScrolled ? "text-muted-foreground" : "text-slate-600"
                 )}
               >
-                Masjid Jami'
+                Masjid Jami&apos;
               </span>
             </div>
           </Link>
@@ -140,7 +140,7 @@ export function Header() {
                           AL ARQAM
                         </span>
                         <span className="block text-xs font-medium text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">
-                          Masjid Jami'
+                          Masjid Jami&apos;
                         </span>
                       </div>
                     </div>
@@ -194,7 +194,7 @@ export function Header() {
                   </Button>
                   <div className="mt-6 text-center">
                     <p className="text-xs text-slate-400 font-medium">
-                      © 2026 Masjid Jami' Al Arqam
+                      © 2026 Masjid Jami&apos; Al Arqam
                     </p>
                   </div>
                 </div>

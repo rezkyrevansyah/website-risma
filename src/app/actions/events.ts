@@ -33,6 +33,7 @@ export async function getEvents(limit?: number) {
     return []
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return data.map((item: any) => ({
     id: item.id,
     title: item.title,

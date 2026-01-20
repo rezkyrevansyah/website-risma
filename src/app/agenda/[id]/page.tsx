@@ -15,22 +15,59 @@ interface AgendaDetailPageProps {
 export default async function AgendaDetailPage(props: AgendaDetailPageProps) {
   const params = await props.params;
   const { id } = params;
-  const event = await getEventById(id);
+
+  let event;
+  try {
+    event = await getEventById(id);
+  } catch (error) {
+    console.error("Error fetching event:", error);
+    return (
+        <div className="min-h-screen pt-24 pb-20 flex items-center justify-center">
+            <div className="text-center">
+                <h1 className="text-2xl font-bold mb-4">Terjadi kesalahan server</h1>
+                <p>Gagal memuat data agenda. Silakan coba lagi nanti.</p>
+                <Link href="/#agenda" className="text-emerald-600 hover:underline mt-4 block">Kembali ke Agenda</Link>
+            </div>
+        </div>
+    );
+  }
 
   if (!event) {
     notFound();
   }
 
-  const dateObj = new Date(event.date);
-  const dayName = dateObj.toLocaleDateString("id-ID", { weekday: "long" });
-  const dateStr = dateObj.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+  let dayName = "";
+  let dateStr = "";
+  let isFinished = false;
 
-  // Calculate status
-  const eventDate = new Date(event.date);
-  eventDate.setHours(0,0,0,0);
-  const today = new Date();
-  today.setHours(0,0,0,0);
-  const isFinished = eventDate < today;
+  try {
+    const dateObj = new Date(event.date);
+    if (isNaN(dateObj.getTime())) {
+      console.error("Invalid date format for event:", event.id, event.date);
+      dayName = "Tanggal Invalid";
+      dateStr = event.date;
+    } else {
+      dayName = dateObj.toLocaleDateString("id-ID", { weekday: "long" });
+      dateStr = dateObj.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+      
+      const eventDate = new Date(event.date);
+      eventDate.setHours(0,0,0,0);
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      isFinished = eventDate < today;
+    }
+  } catch (error) {
+    console.error("Error processing event data:", error);
+    return (
+        <div className="min-h-screen pt-24 pb-20 flex items-center justify-center">
+            <div className="text-center">
+                <h1 className="text-2xl font-bold mb-4">Terjadi kesalahan</h1>
+                <p>Gagal menampilkan detail agenda.</p>
+                <Link href="/#agenda" className="text-emerald-600 hover:underline mt-4 block">Kembali ke Agenda</Link>
+            </div>
+        </div>
+    )
+  }
 
   return (
     <main className="min-h-screen bg-white text-slate-900 pt-24 pb-20">

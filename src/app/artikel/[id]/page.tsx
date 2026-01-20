@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { getArticleById, getArticles } from "@/app/actions/articles";
 import { ArticleItem } from "@/types";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 export default function ArticleDetailPage() {
   const params = useParams();
@@ -145,9 +146,9 @@ export default function ArticleDetailPage() {
       <div className="container-custom px-4 md:px-6 max-w-3xl mx-auto">
         <article className="prose prose-lg prose-slate md:prose-xl prose-headings:font-serif prose-headings:font-bold prose-img:rounded-3xl prose-a:text-emerald-600 bg-white">
             {article.content ? (
-               <div dangerouslySetInnerHTML={{ __html: article.content }} />
+               <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(article.content) }} />
             ) : (
-               <div dangerouslySetInnerHTML={{ __html: `<p>${article.excerpt}</p>` }} />
+               <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(`<p>${article.excerpt}</p>`) }} />
             )}
         </article>
 

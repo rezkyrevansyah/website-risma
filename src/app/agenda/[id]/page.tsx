@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getEventById } from "@/app/actions/events";
 import { ShareButton } from "@/components/public/ShareButton"; 
+import { sanitizeHtml } from "@/lib/sanitize"; 
 
 interface AgendaDetailPageProps {
   params: Promise<{
@@ -69,7 +70,7 @@ export default async function AgendaDetailPage(props: AgendaDetailPageProps) {
 
             {/* Content Body */}
             <div className="prose prose-lg prose-slate max-w-none text-slate-600 leading-relaxed">
-               <div dangerouslySetInnerHTML={{ __html: event.description }} />
+               <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.description) }} />
             </div>
           </div>
 

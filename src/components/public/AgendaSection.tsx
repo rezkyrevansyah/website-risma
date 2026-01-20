@@ -23,6 +23,7 @@ import {
 
 import { EventItem, EventCategory } from "@/types";
 import { CarouselApi } from "@/components/ui/carousel";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 const categoryIcons: Record<EventCategory, React.ReactNode> = {
   kajian: <Mic className="w-6 h-6 text-white" />,
@@ -93,7 +94,7 @@ function AgendaCard({ event }: { event: EventItem }) {
 
         <div 
           className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-6 line-clamp-3 prose prose-sm prose-emerald"
-          dangerouslySetInnerHTML={{ __html: event.description }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.description) }}
         />
       </div>
 
